@@ -2,4 +2,4 @@
 /.vscode
 /bin
 /resources/*
-!resources/shaders/*
+!*/shaders/
