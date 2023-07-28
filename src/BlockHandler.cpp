@@ -2,24 +2,25 @@
 #include "iostream"
 
 
-void BlockHandler::Update(Camera* camera, Chunk* chunk){
+void BlockHandler::Update(Camera* camera, World* world){
     i32 x,y;
     
     if(SDL_GetMouseState(&x,&y) & SDL_BUTTON_LMASK ){
         if(isSolid){
-            chunk->RemoveBlock(block.x,block.y,block.z);
+            world->RemoveBlock(block.x,block.y,block.z);
         }
     }
     else if(SDL_GetMouseState(&x,&y) & SDL_BUTTON_RMASK ){
         if(isSolid){
-            chunk->AddBlock(block.x + blockNormal.x, block.y + blockNormal.y, block.z + blockNormal.z);
+            world->AddBlock(block.x + blockNormal.x, block.y + blockNormal.y, block.z + blockNormal.z);
         }
     }
-    Raycast(camera, chunk);
+    Raycast(camera, world);
 }
 
 
-void BlockHandler::Raycast(Camera* camera, Chunk* chunk){
+void BlockHandler::Raycast(Camera* camera, World* world){
+    isSolid = false;
     f32 deltaX, deltaY, deltaZ, maxX, maxY, maxZ;
     
     glm::vec3 pos1 = camera->GetPosition();
@@ -96,8 +97,8 @@ void BlockHandler::Raycast(Camera* camera, Chunk* chunk){
             break;
         }
 
-        if(chunk->IsWithinChunk(block.x, block.y, block.z)){        
-            if(chunk->ConstainsBlock(block.x, block.y, block.z)){
+        if(world->IsWithinWorld(block.x, block.y, block.z)){        
+            if(world->ContainsBlock(block.x, block.y, block.z)){
                 isSolid = true;
                 
                 if(stepDir == 0){

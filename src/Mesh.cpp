@@ -1,20 +1,21 @@
 #include "mesh.h"
+#include <iostream>
 
 
-Mesh::Mesh(i32 drawType){
-    this->drawType = drawType;
+Mesh::Mesh(){
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ebo);
     glGenVertexArrays(1, &vao);    
 }
 
-Mesh::~Mesh(){
+Mesh::~Mesh(){ 
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ebo);
     glDeleteVertexArrays(1, &vao);
 }
 
-void Mesh::InitializeMesh(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
+void Mesh::InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
+    this->drawType = drawType;
     glBindVertexArray(vao);
     
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -36,8 +37,9 @@ void Mesh::SendData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
 }
 
-void Mesh::Draw(i32 indicesSize){
+void Mesh::Draw(i32 indicesSize, glm::vec3 position){
+    glm::mat4 transform = glm::translate(glm::mat4(1), position);
     glBindVertexArray(vao);
-    glUniformMatrix4fv(0,1, false, glm::value_ptr(glm::mat4(1)));
+    glUniformMatrix4fv(0,1, false, glm::value_ptr(transform));
     glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
 }

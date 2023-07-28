@@ -6,6 +6,6 @@ class VerticesList{
 
     public:
     static f32 verticesCube[6][12];
-    static u32 indicesCube[6];
+    static u32 indicesCube[2][6];
 
 };

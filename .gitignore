@@ -2,4 +2,8 @@
 /.vscode
 /bin
 /resources/*
+/resources/shaders/gles/*
 !*/shaders/
+build_run_web.bat
+/index.data
+

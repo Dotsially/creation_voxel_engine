@@ -13,10 +13,10 @@ class Mesh{
     u32 ebo;
     i32 drawType;
 public:
-    Mesh(i32 drawType);
+    Mesh();
     ~Mesh();
 
-    void InitializeMesh(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
+    void InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
     void SendData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
-    void Draw(i32 indicesSize);
+    void Draw(i32 indicesSize, glm::vec3 position);
 };

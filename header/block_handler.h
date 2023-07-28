@@ -5,16 +5,16 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/vector_angle.hpp"
 #include "camera.h"
-#include "chunk.h"
+#include "world.h"
 
 class BlockHandler{
     glm::ivec3 block;
     glm::ivec3 blockNormal;
     bool isSolid = false;
-    void Raycast(Camera* camera, Chunk* chunk);
+    void Raycast(Camera* camera, World* chunk);
 
 public:
-    void Update(Camera* camera, Chunk* chunk);
+    void Update(Camera* camera, World* chunk);
     glm::ivec3 GetBlock();
     bool IsSolid();
 };

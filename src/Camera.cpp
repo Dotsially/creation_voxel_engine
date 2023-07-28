@@ -28,22 +28,22 @@ Camera::~Camera(){
 
 void Camera::Update(const u8* keystate){       
     if (keystate[SDL_SCANCODE_W]){
-        position += 0.02f * moveDirection;
+        position += 0.2f * moveDirection;
     }
     if (keystate[SDL_SCANCODE_S]){
-        position -= 0.02f * moveDirection;
+        position -= 0.2f * moveDirection;
     }
     if (keystate[SDL_SCANCODE_A]){
-        position -= 0.02f * right;
+        position -= 0.2f * right;
     }
     if (keystate[SDL_SCANCODE_D]){
-        position += 0.02f * right;
+        position += 0.2f * right;
     }
     if(keystate[SDL_SCANCODE_SPACE]){
-        position.y += 0.02f;
+        position.y += 0.2f;
     }
     if(keystate[SDL_SCANCODE_LSHIFT]){
-        position.y -= 0.02f;
+        position.y -= 0.2f;
     }
 
     int x;

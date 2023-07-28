@@ -9,11 +9,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "render.h"
 #include "shader.h"
 #include "window.h"
-#include "chunk.h"
 #include "block_handler.h"
+#include "world.h"
 #include "camera.h"
 
 void InputHandler(Window* gameWindow, const u8* keystate); 
@@ -30,25 +29,33 @@ int main(int argc, char* args[]){
     vBuffer.insert(vBuffer.begin(), VerticesList::verticesCube[0], VerticesList::verticesCube[0]+72);
 
     for(int j = 0; j < 6; j++){
-    for(u32 i : VerticesList::indicesCube){
-            iBuffer.push_back(i + (j*4));
+        if(j % 2 == 0){
+            for(u32 i : VerticesList::indicesCube[0]){
+                iBuffer.push_back(i + (j*4));
+            }
+        }
+        else{
+            for(u32 i : VerticesList::indicesCube[1]){
+                iBuffer.push_back(i + (j*4));
+            }
+        }
+        
     }
-    }
-
+    std::cout << "pre-start";
     Window gameWindow = Window(1280, 720, "World");
+    std::cout << "Start";
     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
 
     Camera camera = Camera(CAMERA_FIRSTPERSON, glm::vec3(0,5,5));
     Shader shader = Shader("vertex.glsl", "fragment.glsl");
-    Chunk chunk;
+    World world;
     BlockHandler blockHandler;
-
-    chunk.CreateChunkData();
-    chunk.CreateChunkMesh();
+    std::cout << "world created" << std::endl;
 
     u32 vbo2;
     u32 vao2;
@@ -79,7 +86,7 @@ int main(int argc, char* args[]){
 
         InputHandler(&gameWindow, keystate);
         camera.Update(keystate);
-        blockHandler.Update(&camera, &chunk);
+        blockHandler.Update(&camera, &world);
 
         transform2 = glm::translate(blockHandler.GetBlock());
         transform2 = glm::scale(transform2, glm::vec3(1.05f,1.05f,1.05f));
@@ -92,7 +99,7 @@ int main(int argc, char* args[]){
         glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
         glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
 
-        chunk.Draw();
+        world.Draw();
 
         if(blockHandler.IsSolid()){
             glBindVertexArray(vao2);
