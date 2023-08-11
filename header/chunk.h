@@ -4,6 +4,7 @@
 #include "vertices_list.h"
 #include <vector>
 #include "mesh.h"
+#include "tile.h"
 
 #define CHUNK_SIZE 32
 
@@ -17,7 +18,7 @@ class Chunk{
     bool firstMesh = true;
     Chunk* chunkNeighbors[4];
 
-    void AddFace(u32 faceIndex, glm::vec3);
+    void AddFace(u32 faceIndex, glm::vec2 voxelIndex, glm::vec3);
 public:
     Chunk();
     ~Chunk();
@@ -25,7 +26,7 @@ public:
     void CreateChunkMesh(Chunk** chunks);
     void SendMeshData();
     void Draw();
-    void AddBlock(Chunk** chunks, i32 x, i32 y, i32 z);
+    void AddBlock(Chunk** chunks, i32 x, i32 y, i32 z, u16 blockID);
     void RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z);
     u32 GetChunkMeshSize();
     u32 GetChunkIndicesSize();
@@ -33,4 +34,5 @@ public:
     u32* GetChunkIndicesData();
     bool ConstainsBlock(i32 x, i32 y, i32 z);
     bool IsWithinChunk(i32 x, i32 y, i32 z);
+    glm::vec2 GetPosition();
 };

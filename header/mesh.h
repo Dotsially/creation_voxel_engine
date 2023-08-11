@@ -16,7 +16,12 @@ public:
     Mesh();
     ~Mesh();
 
+    void InitializeChunkMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
+    void SendChunkData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
+    void DrawChunk(i32 indicesSize, glm::vec3 position);
+
     void InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
-    void SendData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
-    void Draw(i32 indicesSize, glm::vec3 position);
+    void DrawMesh(i32 indicesSize, glm::mat4 transform);
+
+    void InitializeEntityMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
 };

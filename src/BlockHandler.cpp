@@ -2,7 +2,17 @@
 #include "iostream"
 
 
-void BlockHandler::Update(Camera* camera, World* world){
+void BlockHandler::Update(Camera* camera, World* world, const u8* keystate){
+    if(keystate[SDL_SCANCODE_1]){
+        currentBlock = grass.tileID;
+    }
+    else if(keystate[SDL_SCANCODE_2]){
+        currentBlock = dirt.tileID;
+    }
+    else if(keystate[SDL_SCANCODE_3]){
+        currentBlock = stone.tileID;
+    }
+
     i32 x,y;
     
     if(SDL_GetMouseState(&x,&y) & SDL_BUTTON_LMASK ){
@@ -12,7 +22,7 @@ void BlockHandler::Update(Camera* camera, World* world){
     }
     else if(SDL_GetMouseState(&x,&y) & SDL_BUTTON_RMASK ){
         if(isSolid){
-            world->AddBlock(block.x + blockNormal.x, block.y + blockNormal.y, block.z + blockNormal.z);
+            world->AddBlock(block.x + blockNormal.x, block.y + blockNormal.y, block.z + blockNormal.z, currentBlock);
         }
     }
     Raycast(camera, world);

@@ -11,8 +11,8 @@ public:
     World();
     ~World();
 
-    void Draw();
-    void AddBlock(i32 x, i32 y, i32 z);
+    void Draw(glm::vec3 playerPos);
+    void AddBlock(i32 x, i32 y, i32 z, u16 blockID);
     void RemoveBlock(i32 x, i32 y, i32 z);
     bool IsWithinWorld(i32 x, i32 y, i32 z);
     bool ContainsBlock(i32 x, i32 y, i32 z);

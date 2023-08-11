@@ -9,8 +9,9 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "shader.h"
 #include "window.h"
+#include "texture.h"
+#include "shader.h"
 #include "block_handler.h"
 #include "world.h"
 #include "camera.h"
@@ -41,40 +42,27 @@ int main(int argc, char* args[]){
         }
         
     }
-    std::cout << "pre-start";
     Window gameWindow = Window(1280, 720, "World");
-    std::cout << "Start";
+    
+    //opengl stuff
     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
-    Camera camera = Camera(CAMERA_FIRSTPERSON, glm::vec3(0,5,5));
-    Shader shader = Shader("vertex.glsl", "fragment.glsl");
+    Camera camera = Camera(CAMERA_FREECAM, glm::vec3(0,5,5));
+    Texture texture = Texture("tilemap.png");
+    Texture texture2 = Texture("selection.png");
+    Shader shader = Shader("chunk_vertex.glsl", "chunk_fragment.glsl");
+    Shader shaderBlock = Shader("vertex_selection.glsl", "fragment_selection.glsl");
     World world;
     BlockHandler blockHandler;
     std::cout << "world created" << std::endl;
 
-    u32 vbo2;
-    u32 vao2;
-    u32 ebo2;
+    Mesh selectionMesh;
 
-    glGenBuffers(1, &vbo2);
-    glGenBuffers(1, &ebo2);
-    glGenVertexArrays(1, &vao2);
-
-    glBindVertexArray(vao2);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, vbo2);
-    glBufferData(GL_ARRAY_BUFFER, vBuffer.size()*sizeof(f32), vBuffer.data(), GL_STATIC_DRAW);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo2);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, iBuffer.size()*sizeof(u32), iBuffer.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(f32), 0);
-    glEnableVertexAttribArray(0);
+    selectionMesh.InitializeMesh(GL_STATIC_DRAW, vBuffer.data(), vBuffer.size(), iBuffer.data(), iBuffer.size());
 
     perspective = camera.GetProjectMatrix();
     
@@ -86,27 +74,28 @@ int main(int argc, char* args[]){
 
         InputHandler(&gameWindow, keystate);
         camera.Update(keystate);
-        blockHandler.Update(&camera, &world);
+        blockHandler.Update(&camera, &world, keystate);
 
         transform2 = glm::translate(blockHandler.GetBlock());
-        transform2 = glm::scale(transform2, glm::vec3(1.05f,1.05f,1.05f));
+        transform2 = glm::scale(transform2, glm::vec3(1.02f,1.02f,1.02f));
 
         view = camera.GetViewMatrix();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        texture.ActivateTexture();
         shader.UseProgram();
         glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
         glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
 
-        world.Draw();
+        world.Draw(camera.GetPosition());
 
         if(blockHandler.IsSolid()){
-            glBindVertexArray(vao2);
-
-            glUniformMatrix4fv(0,1, false, glm::value_ptr(transform2));
-
-            glDrawElements(GL_TRIANGLES, iBuffer.size(), GL_UNSIGNED_INT, 0);
+            texture2.ActivateTexture();
+            shaderBlock.UseProgram();
+            glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
+            glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
+            selectionMesh.DrawMesh(iBuffer.size(), transform2);
         }
 
         gameWindow.SwapBuffers();

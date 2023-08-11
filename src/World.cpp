@@ -17,12 +17,12 @@ World::World(){
         }
     }
 
+    
+    Chunk* neighbors[4];
     for(i32 x = 0; x < REGION_SIZE; x++){
         for(i32 z = 0; z < REGION_SIZE; z++){
-            Chunk** neighbors = new Chunk*[4];
             GetNeighbors(neighbors,x,z);
             chunks[z+x*REGION_SIZE].CreateChunkMesh(neighbors);
-            delete(neighbors);
         }
     }
 }
@@ -31,10 +31,15 @@ World::~World(){
     delete(chunks);
 }
 
-void World::Draw(){
+void World::Draw(glm::vec3 playerPos){
+    i32 renderDistance = 4;
+    glm::ivec2 playerChunkPos = glm::vec2(playerPos.x/32, playerPos.z/32);
     for(i32 x = 0; x < REGION_SIZE; x++){
         for(i32 z = 0; z < REGION_SIZE; z++){
-            chunks[z+x*REGION_SIZE].Draw();
+            glm::ivec2 chunkPos = chunks[z+x*REGION_SIZE].GetPosition();
+            if(playerChunkPos.x-chunkPos.x <= renderDistance && playerChunkPos.x-chunkPos.x >= -renderDistance && playerChunkPos.y-chunkPos.y <= renderDistance && playerChunkPos.y-chunkPos.y >= -renderDistance){
+                chunks[z+x*REGION_SIZE].Draw();
+            }
         }
     }
 }
@@ -51,11 +56,13 @@ bool World::ContainsBlock(i32 x, i32 y, i32 z){
     return chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE].ConstainsBlock(x%32, y, z%32);
 }
 
-void World::AddBlock(i32 x, i32 y, i32 z){
-    glm::ivec2 chunkCoordinate(x/32, z/32);
-    Chunk* neighbors[4];
-    GetNeighbors(neighbors, chunkCoordinate.x, chunkCoordinate.y);
-    chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE].AddBlock(neighbors, x%32, y, z%32);
+void World::AddBlock(i32 x, i32 y, i32 z, u16 blockID){
+    if(IsWithinWorld(x,y,z)){
+        glm::ivec2 chunkCoordinate(x/32, z/32);
+        Chunk* neighbors[4];
+        GetNeighbors(neighbors, chunkCoordinate.x, chunkCoordinate.y);
+        chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE].AddBlock(neighbors, x%32, y, z%32, blockID);
+    }
 }
 
 void World::RemoveBlock(i32 x, i32 y, i32 z){

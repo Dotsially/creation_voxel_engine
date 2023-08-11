@@ -9,7 +9,8 @@
 
 enum CameraType{
     CAMERA_THIRDPERSON,
-    CAMERA_FIRSTPERSON
+    CAMERA_FIRSTPERSON,
+    CAMERA_FREECAM
 };
 
 class Camera{
