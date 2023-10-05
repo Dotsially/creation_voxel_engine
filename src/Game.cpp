@@ -15,6 +15,10 @@
 #include "block_handler.h"
 #include "world.h"
 #include "camera.h"
+#include "entity.h"
+#include "entity_mesh.h"
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
 
 void InputHandler(Window* gameWindow, const u8* keystate); 
 
@@ -42,7 +46,7 @@ int main(int argc, char* args[]){
         }
         
     }
-    Window gameWindow = Window(1280, 720, "World");
+    Window gameWindow = Window(SCREEN_WIDTH, SCREEN_HEIGHT, "World");
     
     //opengl stuff
     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
@@ -51,13 +55,18 @@ int main(int argc, char* args[]){
     glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Camera camera = Camera(CAMERA_FREECAM, glm::vec3(0,5,5));
+    Camera camera = Camera(CAMERA_THIRDPERSON, glm::vec3(0,11,0));
     Texture texture = Texture("tilemap.png");
     Texture texture2 = Texture("selection.png");
+    Texture entityTexture  = Texture("guy.png");
     Shader shader = Shader("chunk_vertex.glsl", "chunk_fragment.glsl");
     Shader shaderBlock = Shader("vertex_selection.glsl", "fragment_selection.glsl");
+    Shader shaderEntity = Shader("entity_vertex.glsl", "entity_fragment.glsl");
     World world;
     BlockHandler blockHandler;
+    Entity player = Entity(glm::vec3(2,8,8));
+    player.vars.playerControlled = 1;
+    EntityMesh entityMesh = EntityMesh();
     std::cout << "world created" << std::endl;
 
     Mesh selectionMesh;
@@ -66,39 +75,65 @@ int main(int argc, char* args[]){
 
     perspective = camera.GetProjectMatrix();
     
-    
+    const double FRAME_TIME = 1.0 / 60.0; // delta time for 60 FPS
+
+    double lastTime = SDL_GetTicks();
+    double frameCounter = 0;
+
     while (!gameWindow.WindowShouldClose())
     {
         gameWindow.PollEvents();
+
+        double startTime = SDL_GetTicks();
+        double passedTime = startTime - lastTime;
+        lastTime = startTime;
+        frameCounter++;
+        
         const u8* keystate = SDL_GetKeyboardState(NULL);
 
         InputHandler(&gameWindow, keystate);
-        camera.Update(keystate);
-        blockHandler.Update(&camera, &world, keystate);
 
-        transform2 = glm::translate(blockHandler.GetBlock());
-        transform2 = glm::scale(transform2, glm::vec3(1.02f,1.02f,1.02f));
+        if(passedTime >= 1.0/60.0){
+            lastTime = startTime;
+            frameCounter = 0;
 
-        view = camera.GetViewMatrix();
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            blockHandler.Update(&camera, &world, keystate);
+            player.Update();
+            camera.Update(keystate, player.GetPosition());
+            transform2 = glm::translate(glm::vec3(blockHandler.GetBlock())+0.5f);
+            transform2 = glm::scale(transform2, glm::vec3(1.02f,1.02f,1.02f));
+            //entityMesh.Update(glm::vec3(0));
+            view = camera.GetViewMatrix();
         
-        texture.ActivateTexture();
-        shader.UseProgram();
-        glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
-        glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        world.Draw(camera.GetPosition());
-
-        if(blockHandler.IsSolid()){
-            texture2.ActivateTexture();
-            shaderBlock.UseProgram();
+            texture.ActivateTexture();
+            shader.UseProgram();
             glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
             glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
-            selectionMesh.DrawMesh(iBuffer.size(), transform2);
-        }
 
-        gameWindow.SwapBuffers();
+            world.Draw(camera.GetPosition());
+
+
+
+            if(blockHandler.IsSolid()){
+                texture2.ActivateTexture();
+                shaderBlock.UseProgram();
+                glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
+                glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
+                selectionMesh.DrawMesh(iBuffer.size(), transform2);
+
+            }
+
+            entityTexture.ActivateTexture();
+            shaderEntity.UseProgram();
+                glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
+                glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
+            entityMesh.Draw(player.GetPosition());
+
+
+            gameWindow.SwapBuffers();
+        }
     }
 
     return 0;

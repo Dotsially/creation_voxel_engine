@@ -14,7 +14,19 @@ void BlockHandler::Update(Camera* camera, World* world, const u8* keystate){
     }
 
     i32 x,y;
-    
+    SDL_GetMouseState(&x,&y);
+    // std::cout << x << " ";
+    // std::cout << y << std::endl;
+
+    //Get ray from mouse coordinates in 3d space
+    glm::vec3 rayNds = glm::vec3((2.0f * x) / 1280.0f - 1.0f, 1.0f - (2.0f * y) / 720.0f, 1.0f);
+    glm::vec4 rayClip = glm::vec4(rayNds.x, rayNds.y, -1.0, 1.0);
+    glm::vec4 rayEye = glm::inverse(camera->GetProjectMatrix()) * rayClip;
+    rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0, 0.0);
+    glm::vec4 temp = (glm::inverse(camera->GetViewMatrix()) * rayEye);
+    glm::vec3 rayWor = glm::vec3(temp.x, temp.y, temp.z);
+    rayWor = glm::normalize(rayWor);
+
     if(SDL_GetMouseState(&x,&y) & SDL_BUTTON_LMASK ){
         if(isSolid){
             world->RemoveBlock(block.x,block.y,block.z);
@@ -25,16 +37,20 @@ void BlockHandler::Update(Camera* camera, World* world, const u8* keystate){
             world->AddBlock(block.x + blockNormal.x, block.y + blockNormal.y, block.z + blockNormal.z, currentBlock);
         }
     }
-    Raycast(camera, world);
+
+
+    Raycast(camera, rayWor, world);
 }
 
 
-void BlockHandler::Raycast(Camera* camera, World* world){
+void BlockHandler::Raycast(Camera* camera, glm::vec3 rayDirection, World* world){
     isSolid = false;
     f32 deltaX, deltaY, deltaZ, maxX, maxY, maxZ;
     
     glm::vec3 pos1 = camera->GetPosition();
-    glm::vec3 pos2 = camera->GetPosition() + camera->GetTarget() * 10.0f;
+    glm::vec3 pos2 = camera->GetPosition() + rayDirection * 20.0f;
+
+
 
     i32 stepDir = -1;
     blockNormal = glm::vec3(0);

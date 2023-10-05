@@ -36,7 +36,7 @@ Window::Window(int width, int height, std::string title){
     }
 
     SDL_GL_SetSwapInterval(0);
-    SDL_SetRelativeMouseMode(SDL_TRUE);
+    //SDL_SetRelativeMouseMode(SDL_TRUE);
 
     glViewport(0,0,1280,720);
 }

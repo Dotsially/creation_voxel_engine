@@ -40,10 +40,10 @@ u32 VerticesList::indicesCube[2][6] =
     };
 
 
-f32 VerticesList::verticesEntity1x1[20]{
-    -0.5,-0.5, 0.0, 0.0, 0.0, -0.5,0.5,0.0,0.0,1.0, 0.5,0.5,0.0,1.0,1.0, 0.5,-0.5,0.0,1.0,0.0 
+f32 VerticesList::verticesEntity1x1[20] = {
+    -0.5f,-0.5f, -0.5f,0.5f, 0.5f,0.5f, -0.5f,-0.5f
 };
 
-f32 VerticesList::verticesEntity2x1[20]{
-    -0.5,-0.5, 0.0, 0.0, 0.0, -0.5,1.5,0.0,0.0,1.0, 0.5,1.5,0.0,1.0,1.0, 0.5,-0.5,0.0,1.0,0.0 
+u32 VerticesList::indicesEntity[6] = {
+    0,1,2,3,0,2
 };

@@ -9,5 +9,5 @@ class VerticesList{
     static f32 verticesCube[6][12];
     static u32 indicesCube[2][6];
     static f32 verticesEntity1x1[20];
-    static f32 verticesEntity2x1[20];
+    static u32 indicesEntity[6];
 };

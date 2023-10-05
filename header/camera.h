@@ -30,7 +30,7 @@ class Camera{
 public:
     Camera(CameraType type, glm::vec3 position);
     ~Camera();
-    void Update(const u8* keystate);
+    void Update(const u8* keystate, glm::vec3 targetPosition);
     glm::mat4 GetProjectMatrix();
     glm::mat4 GetViewMatrix();
     glm::vec3 GetPosition();

@@ -23,5 +23,9 @@ public:
     void InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
     void DrawMesh(i32 indicesSize, glm::mat4 transform);
 
+    //TODO
+    void InitializeInstancedMesh();
+    void DrawInstancedMesh();
+
     void InitializeEntityMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
 };

@@ -11,13 +11,16 @@ Camera::Camera(CameraType type, glm::vec3 position){
             this->worldUp = glm::vec3{0.0f,1.0f,0.0f};
             this->right = glm::normalize(glm::cross(this->target, this->worldUp));
             this->up = glm::normalize(glm::cross(this->right, this->target));
-            this->fov = glm::radians(80.0);
+            this->fov = glm::radians(70.0);
             this->yaw = -90.0f;
             this->moveDirection = glm::normalize(
                 glm::vec3{glm::cos(glm::radians(this->yaw)), 0.0, glm::sin(glm::radians(this->yaw))});
             break;
         case CAMERA_THIRDPERSON:
-            //TODO
+            this->position = position;
+            this->target = glm::vec3{5.0f,0.0f,5.0f};
+            this->up = glm::vec3{0.0f,1.0f,0.0f};;
+            this->fov = glm::radians(80.0);
             break; 
     }
 }
@@ -27,7 +30,7 @@ Camera::~Camera(){
 }
 
 
-void Camera::Update(const u8* keystate){    
+void Camera::Update(const u8* keystate, glm::vec3 targetPosition){    
     if(cameraType == CAMERA_FREECAM){
         if (keystate[SDL_SCANCODE_W]){
             position += 0.2f * moveDirection;
@@ -77,11 +80,26 @@ void Camera::Update(const u8* keystate){
     
         moveDirection =  glm::normalize(glm::vec3(cos(glm::radians(yaw)), 0, sin(glm::radians(yaw))));
     } 
+
+    if(cameraType == CAMERA_THIRDPERSON){
+        position = targetPosition + glm::vec3(0,3,-4) + 1.0f;
+        target = targetPosition + 1.0f;
+    }
 }        
 
 
 glm::mat4 Camera::GetViewMatrix(){
-    return glm::lookAt(this->position, this->position + this->target, this->up);
+    glm::mat4 view;
+    switch (cameraType){
+        case CAMERA_FREECAM:
+        case CAMERA_FIRSTPERSON:
+            view  = glm::lookAt(this->position, this->position + this->target, this->up);
+            break;
+        case CAMERA_THIRDPERSON:
+            view = glm::lookAt(this->position, this->target, this->up);   
+            break; 
+    }
+    return view;
 }
 
 glm::mat4 Camera::GetProjectMatrix(){

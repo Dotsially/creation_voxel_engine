@@ -13,7 +13,7 @@ class BlockHandler{
     glm::ivec3 block;
     glm::ivec3 blockNormal;
     bool isSolid = false;
-    void Raycast(Camera* camera, World* chunk);
+    void Raycast(Camera* camera, glm::vec3 rayDirection, World* chunk);
 
 public:
     void Update(Camera* camera, World* chunk, const u8* keystate);

@@ -184,7 +184,7 @@ void Chunk::RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z){
 }
 
 void Chunk::Draw(){
-    chunkMesh.DrawChunk(GetChunkIndicesSize(), glm::vec3(position.x*CHUNK_SIZE, 0, position.y*CHUNK_SIZE));
+    chunkMesh.DrawChunk(GetChunkIndicesSize(), glm::vec3(position.x*CHUNK_SIZE+0.5, 0.5, position.y*CHUNK_SIZE+0.5));
 }
 
 
