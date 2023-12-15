@@ -3,6 +3,9 @@
 
 
 Window::Window(int width, int height, std::string title){
+    WINDOW_WIDTH = width;
+    WINDOW_HEIGHT = height;
+    
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 ){
         std::cout << "SDL could not be initialized" << std::endl;
         quit = true;
@@ -24,6 +27,8 @@ Window::Window(int width, int height, std::string title){
         quit = true;
     } 
 
+    SDL_WarpMouseInWindow(this->window, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2); 
+
     this->glContext = SDL_GL_CreateContext(window);  
     if (glContext == NULL){
         std::cout << "Failed to create OpenGL context" << std::endl;
@@ -39,6 +44,16 @@ Window::Window(int width, int height, std::string title){
     //SDL_SetRelativeMouseMode(SDL_TRUE);
 
     glViewport(0,0,1280,720);
+}
+
+void Window::Update(bool centeredMouse){
+    if(centeredMouse){
+            SDL_SetRelativeMouseMode(SDL_TRUE);
+            SDL_WarpMouseInWindow(this->window, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2); 
+    }
+    else{
+            SDL_SetRelativeMouseMode(SDL_FALSE);
+    }
 }
 
 Window::~Window(){

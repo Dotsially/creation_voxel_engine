@@ -26,6 +26,7 @@ glm::mat4 view;
 glm::mat4 perspective;
 glm::mat4 transform = glm::mat4(1.0);
 glm::mat4 transform2 = glm::mat4(1.0);
+bool centeredMouse = true;
 
 int main(int argc, char* args[]){
     std::vector<f32> vBuffer;
@@ -55,7 +56,7 @@ int main(int argc, char* args[]){
     glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Camera camera = Camera(CAMERA_THIRDPERSON, glm::vec3(0,11,0));
+    Camera camera = Camera(CAMERA_FREECAM, glm::vec3(0,11,0));
     Texture texture = Texture("tilemap.png");
     Texture texture2 = Texture("selection.png");
     Texture entityTexture  = Texture("guy.png");
@@ -96,6 +97,8 @@ int main(int argc, char* args[]){
         if(passedTime >= 1.0/60.0){
             lastTime = startTime;
             frameCounter = 0;
+            
+            gameWindow.Update(centeredMouse);
 
             blockHandler.Update(&camera, &world, keystate);
             player.Update();
@@ -104,7 +107,7 @@ int main(int argc, char* args[]){
             transform2 = glm::scale(transform2, glm::vec3(1.02f,1.02f,1.02f));
             //entityMesh.Update(glm::vec3(0));
             view = camera.GetViewMatrix();
-        
+            
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             texture.ActivateTexture();
@@ -146,5 +149,8 @@ void InputHandler(Window* gameWindow, const u8* keystate){
     }
     if(keystate[SDL_SCANCODE_ESCAPE]){
         gameWindow->Quit();    
+    }
+    if(keystate[SDL_SCANCODE_X]){
+        centeredMouse = !centeredMouse;
     }
 }
